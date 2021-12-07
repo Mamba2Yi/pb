@@ -100,7 +100,7 @@ type ProgressBar struct {
 	startTime      time.Time
 	refreshRate    time.Duration
 	tmpl           *template.Template
-	state          *State
+	State          *State
 	buf            *bytes.Buffer
 	ticker         *time.Ticker
 	finish         chan struct{}
@@ -168,7 +168,7 @@ func (pb *ProgressBar) Start() *ProgressBar {
 	}
 	pb.configure()
 	pb.finished = false
-	pb.state = nil
+	pb.State = nil
 	pb.startTime = time.Now()
 	if st, ok := pb.vars[Static].(bool); ok && st {
 		return pb
@@ -224,7 +224,7 @@ func (pb *ProgressBar) write(finish bool) {
 		}
 	}
 	if pb.GetBool(Color) {
-		pb.coutput.Write([]byte(result))
+		//pb.coutput.Write([]byte(result))
 	} else {
 		pb.nocoutput.Write([]byte(result))
 	}
@@ -401,7 +401,7 @@ func (pb *ProgressBar) Finish() *ProgressBar {
 	return pb
 }
 
-// IsStarted indicates progress bar state
+// IsStarted indicates progress bar State
 func (pb *ProgressBar) IsStarted() bool {
 	pb.mu.RLock()
 	defer pb.mu.RUnlock()
@@ -447,49 +447,49 @@ func (pb *ProgressBar) render() (result string, width int) {
 	defer pb.rm.Unlock()
 	pb.mu.Lock()
 	pb.configure()
-	if pb.state == nil {
-		pb.state = &State{ProgressBar: pb}
+	if pb.State == nil {
+		pb.State = &State{ProgressBar: pb}
 		pb.buf = bytes.NewBuffer(nil)
 	}
 	if pb.startTime.IsZero() {
 		pb.startTime = time.Now()
 	}
-	pb.state.id++
-	pb.state.finished = pb.finished
-	pb.state.time = time.Now()
+	pb.State.id++
+	pb.State.finished = pb.finished
+	pb.State.time = time.Now()
 	pb.mu.Unlock()
 
-	pb.state.width = pb.Width()
-	width = pb.state.width
-	pb.state.total = pb.Total()
-	pb.state.current = pb.Current()
+	pb.State.width = pb.Width()
+	width = pb.State.width
+	pb.State.total = pb.Total()
+	pb.State.current = pb.Current()
 	pb.buf.Reset()
 
-	if e := pb.tmpl.Execute(pb.buf, pb.state); e != nil {
+	if e := pb.tmpl.Execute(pb.buf, pb.State); e != nil {
 		pb.SetErr(e)
 		return "", 0
 	}
 
 	result = pb.buf.String()
 
-	aec := len(pb.state.recalc)
+	aec := len(pb.State.recalc)
 	if aec == 0 {
-		// no adaptive elements
+		// no adaptive Elements
 		return
 	}
 
 	staticWidth := CellCount(result) - (aec * adElPlaceholderLen)
 
-	if pb.state.Width()-staticWidth <= 0 {
+	if pb.State.Width()-staticWidth <= 0 {
 		result = strings.Replace(result, adElPlaceholder, "", -1)
-		result = StripString(result, pb.state.Width())
+		result = StripString(result, pb.State.Width())
 	} else {
-		pb.state.adaptiveElWidth = (width - staticWidth) / aec
-		for _, el := range pb.state.recalc {
-			result = strings.Replace(result, adElPlaceholder, el.ProgressElement(pb.state), 1)
+		pb.State.adaptiveElWidth = (width - staticWidth) / aec
+		for _, el := range pb.State.recalc {
+			result = strings.Replace(result, adElPlaceholder, el.ProgressElement(pb.State), 1)
 		}
 	}
-	pb.state.recalc = pb.state.recalc[:0]
+	pb.State.recalc = pb.State.recalc[:0]
 	return
 }
 
@@ -525,8 +525,8 @@ func (pb *ProgressBar) ProgressElement(s *State, args ...string) string {
 	return pb.String()
 }
 
-// State represents the current state of bar
-// Need for bar elements
+// State represents the current State of bar
+// Need for bar Elements
 type State struct {
 	*ProgressBar
 
@@ -539,7 +539,7 @@ type State struct {
 	recalc []Element
 }
 
-// Id it's the current state identifier
+// Id it's the current State identifier
 // - incremental
 // - starts with 1
 // - resets after finish/start
@@ -562,7 +562,7 @@ func (s *State) Width() int {
 	return s.width
 }
 
-// AdaptiveElWidth - adaptive elements must return string with given cell count (when AdaptiveElWidth > 0)
+// AdaptiveElWidth - adaptive Elements must return string with given cell count (when AdaptiveElWidth > 0)
 func (s *State) AdaptiveElWidth() int {
 	return s.adaptiveElWidth
 }
@@ -582,7 +582,7 @@ func (s *State) IsFirst() bool {
 	return s.id == 1
 }
 
-// Time when state was created
+// Time when State was created
 func (s *State) Time() time.Time {
 	return s.time
 }

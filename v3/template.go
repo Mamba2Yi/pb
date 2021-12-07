@@ -67,7 +67,7 @@ func fillTemplateFuncs(t *template.Template) {
 	t.Funcs(defaultTemplateFuncs)
 	emf := make(template.FuncMap)
 	elementsM.Lock()
-	for k, v := range elements {
+	for k, v := range Elements {
 		element := v
 		emf[k] = func(state *State, args ...string) string { return element.ProgressElement(state, args...) }
 	}

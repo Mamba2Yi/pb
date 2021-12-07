@@ -18,12 +18,12 @@ var (
 	defaultBarEls = [5]string{"[", "-", ">", "_", "]"}
 )
 
-// Element is an interface for bar elements
+// Element is an interface for bar Elements
 type Element interface {
 	ProgressElement(state *State, args ...string) string
 }
 
-// ElementFunc type implements Element interface and created for simplify elements
+// ElementFunc type implements Element interface and created for simplify Elements
 type ElementFunc func(state *State, args ...string) string
 
 // ProgressElement just call self func
@@ -33,7 +33,7 @@ func (e ElementFunc) ProgressElement(state *State, args ...string) string {
 
 var elementsM sync.Mutex
 
-var elements = map[string]Element{
+var Elements = map[string]Element{
 	"percent":  ElementPercent,
 	"counters": ElementCounters,
 	"bar":      adaptiveWrap(ElementBar),
@@ -44,13 +44,13 @@ var elements = map[string]Element{
 	"cycle":    ElementCycle,
 }
 
-// RegisterElement give you a chance to use custom elements
+// RegisterElement give you a chance to use custom Elements
 func RegisterElement(name string, el Element, adaptive bool) {
 	if adaptive {
 		el = adaptiveWrap(el)
 	}
 	elementsM.Lock()
-	elements[name] = el
+	Elements[name] = el
 	elementsM.Unlock()
 }
 
@@ -122,7 +122,7 @@ const (
 )
 
 type bar struct {
-	eb  [5][]byte // elements in bytes
+	eb  [5][]byte // Elements in bytes
 	cc  [5]int    // cell counts
 	buf *bytes.Buffer
 }
@@ -316,7 +316,7 @@ var ElementString ElementFunc = func(state *State, args ...string) string {
 
 // ElementCycle return next argument for every call
 // In template use as follows: {{cycle . "1" "2" "3"}}
-// Or mix width other elements: {{ bar . "" "" (cycle . "↖" "↗" "↘" "↙" )}}
+// Or mix width other Elements: {{ bar . "" "" (cycle . "↖" "↗" "↘" "↙" )}}
 var ElementCycle ElementFunc = func(state *State, args ...string) string {
 	if len(args) == 0 {
 		return ""
