@@ -1,11 +1,11 @@
 package pb
 
 import (
-	"fmt"
 	"math"
 	"time"
 
 	"github.com/VividCortex/ewma"
+	"github.com/spf13/cast"
 )
 
 var speedAddLimit = time.Second / 2
@@ -75,15 +75,6 @@ func getSpeedObj(state *State) (s *speed) {
 // Second string will be used when speed not available, default is "? p/s"
 // In template use as follows: {{speed .}} or {{speed . "%s per second"}} or {{speed . "%s ps" "..."}
 var ElementSpeed ElementFunc = func(state *State, args ...string) string {
-	sp := getSpeedObj(state).value(state)
-	fmt.Println(sp)
-	format := state.Format(int64(round(sp)))
-	fmt.Println(format)
-	if sp == 0 {
-		return argsHelper(args).getNotEmptyOr(1, "? p/s")
-	}
-	helper := argsHelper(args)
-	sprintf := fmt.Sprintf(helper.getNotEmptyOr(0, "%s p/s"), format)
-	fmt.Println(sprintf)
-	return fmt.Sprintf(argsHelper(args).getNotEmptyOr(0, "%s p/s"), state.Format(int64(round(sp))))
+	sp := getSpeedObj(state).value(state) // B/s -- 90236718.231121
+	return cast.ToString(sp)
 }

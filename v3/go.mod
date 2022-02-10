@@ -7,6 +7,7 @@ require (
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mattn/go-runewidth v0.0.12
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/spf13/cast v1.4.1
 	golang.org/x/sys v0.0.0-20210403161142-5e06dd20ab57 // indirect
 )
 
