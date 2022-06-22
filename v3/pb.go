@@ -223,11 +223,6 @@ func (pb *ProgressBar) write(finish bool) {
 			}
 		}
 	}
-	if pb.GetBool(Color) {
-		//pb.coutput.Write([]byte(result))
-	} else {
-		pb.nocoutput.Write([]byte(result))
-	}
 }
 
 // Total return current total bar value
